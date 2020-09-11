@@ -1,0 +1,19 @@
+{{ $avatar := (joinStr "" "https://cdn.discordapp.com/avatars/" (toString .User.ID) "/" .User.Avatar ".png") }}
+{{$serv := (print "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+{{$embed := cembed
+"title" "Bienvenue !"
+"author" (sdict "name" "Projet Nucleus" "icon_url"  $serv)
+"thumbnail" (sdict "url" $avatar)
+"description" "Projet Nucleus est un projet de Roleplay, où il est possible d'être à la fois spectateur ou joueur. En outre, tu peux aussi participer au Cadavre Exquis. N'hésite pas non plus à venir discuter avec nous ! \n > *Pour obtenir l'accès au reste du serveur, tu dois valider les règles et choisir tes rôles dans <#741838282412785713>* "
+"footer" (sdict "text" (joinStr " " "Le serveur totalise maintenant"  .Guild.MemberCount "membres."))
+"timestamp" .Member.JoinedAt
+"color" 0x75bfd8}}
+{{sendMessage nil (complexMessage "content" (joinStr " " "Bienvenue sur Projet Nucleus" .User.Mention  "!") "embed" $embed)}} 
+{{addRoleID 752143242568663080}}
+
+{{$joined := sdict}}
+{{with (dbGet 0 "joined")}}
+{{$joined = sdict .Value}}
+{{end}}
+{{$joined.Set (str .User.ID) (humanizeDurationHours (currentTime.Sub .Member.JoinedAt.Parse))}}
+{{dbSet 0 "joined" $joined}}

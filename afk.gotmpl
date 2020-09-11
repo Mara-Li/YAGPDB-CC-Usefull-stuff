@@ -1,0 +1,86 @@
+{{/*
+	This command allows users to set an AFK message with optional duration.
+	Usage:
+
+	$afk -d <duration> <reason>
+
+	Recommended trigger: Command trigger with trigger `-afk`
+*/}}
+
+{{$duration := 3600}}
+{{$msg := ""}}
+{{$id := 0}}
+{{$idrole := 729351261576626229 }}
+{{$chan :=  719905269081178152 }}
+{{$idold := 0}}
+
+
+{{ if .CmdArgs }}
+	{{if eq (toFloat (len .CmdArgs)) (toFloat 1)}}
+	{{if hasRoleID $idrole}}
+		{{$duration = 3600}}
+		{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+		{{deleteMessage $chan $idold}}
+		{{$msg = .CmdArgs}}
+	{{end}}
+	{{else if gt (toFloat (len .CmdArgs)) (toFloat 1)}}
+		{{if eq (toFloat (len .CmdArgs)) (toFloat 2)}}
+			{{if eq (index .CmdArgs 0) "-d"}}
+				{{$duration = (index .CmdArgs 1)}}
+				{{if hasRoleID $idrole}}
+					{{$duration = (index .CmdArgs 1)}}
+					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+					{{deleteMessage $chan $idold}}
+				{{end}}
+				{{if eq (toInt $duration) (toInt 0)}}
+					"Mauvaise durée d'absence."
+				{{end}}
+				{{$msg = "" }}
+				{{$duration = mult $duration 3600}}
+				{{dbSetExpire .User.ID "afk" $msg (toInt $duration)}}
+			{{else}}
+				{{$msg = (joinStr " " "car :" .CmdArgs)}}
+			{{end}}
+		{{else}}
+			{{if eq (index .CmdArgs 0) "-d"}}
+				{{$duration = (index .CmdArgs 1)}}
+				{{if hasRoleID $idrole}}
+					{{$duration = (index .CmdArgs 1)}}
+					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+					{{deleteMessage $chan $idold}}
+				{{end}}
+				{{if eq (toInt $duration) (toInt 0)}}
+					"Mauvaise durée d'absence."
+				{{end}}
+				{{$duration = mult $duration 3600}}
+				{{$msg = (joinStr " " "car :" (slice .CmdArgs 2))}}
+				{{dbSetExpire .User.ID "afk" $msg (toInt $duration)}}
+			{{end}}
+		{{end}}
+	{{end}}
+		{{$afkembed := cembed
+			"color" (randInt 111111 999999)
+			"author" (sdict "name" (printf "%s est AFK" .User.Username) "icon_url" (.User.AvatarURL "256"))
+			"description" (joinStr " " "Durant"  (humanizeDurationSeconds (toDuration (joinStr "" $duration "s" ))) $msg)}}
+		{{$id = sendMessageRetID $chan $afkembed }}
+		{{dbSetExpire .User.ID "afkmsg" (str $id) (toInt $duration)}}
+		{{deleteMessage $id (toInt $duration)}}
+	{{addRoleID $idrole}}
+	{{removeRoleID $idrole $duration}}
+{{else}}
+	{{if hasRoleID $idrole}}
+		{{removeRoleID $idrole}}
+		{{.User.Mention}} : vous n'êtes plus AFK
+		{{$embed := cembed
+		"author" (sdict "name" (printf "%s n'est plus AFK" .User.Username) "icon_url" (.User.AvatarURL "256" ))}}
+		{{$afk:= sendMessageRetID $chan $embed}}
+		{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+		{{deleteMessage $chan $idold}}
+		{{deleteMessage $chan $afk 180}}
+		{{dbDel .User.ID "afk"}}
+		{{dbDel .User.ID "idold"}}
+		{{dbDel .User.ID "afkmsg"}}
+	{{end}}
+{{end}}
+{{deleteTrigger 1}}
+{{deleteResponse 15}}
