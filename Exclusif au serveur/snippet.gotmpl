@@ -1,5 +1,6 @@
-{{$chancommande := "701373579593252944"}}
 {{$combat := 701373579593252944}}
+{{$cmd := 734838748721840188}}
+
 {{$col := 16777215}}
 {{$p := 0}}
 {{$r := .Member.Roles}}
@@ -35,7 +36,8 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?dés") (eq $commande "?dice") (eq $commande "?dé") (eq $commande "?de") (eq $commande "?dices")}}
-		{{$message := getMessage $combat 727992973131776020 }}
+		{{$message := getMessage $cmd 735871277889486938 }}
+		{{$commande}}
 		{{$embed := cembed
 	   	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -65,7 +67,7 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?recharge") (eq $commande "?recharger") (eq $commande "?charger") (eq $commande "?rechargé") (eq $commande "?chargé")  (eq $commande "?charge") (eq $commande "?charger")}}
-		{{$message := getMessage 734838748721840188 751797181643489310}}
+		{{$message := getMessage $cmd 751797181643489310}}
 		{{$embed := cembed
 	   	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -76,7 +78,7 @@
 		{{deleteTrigger 1}}
 
 	{{else if eq $commande "?shop" "?store" "?economy" "?eco"}}
-		{{$message := getMessage 734838748721840188 736713337571901570}}
+		{{$message := getMessage $cmd 736713337571901570}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -86,7 +88,7 @@
 		{{deleteTrigger 1}}
 
 		{{else if eq $commande "?craft" "?fabric" "?fabriquer" "?recycle"}}
-		{{$message := getMessage 734838748721840188 751797127595819008}}
+		{{$message := getMessage $cmd 751797127595819008}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -106,7 +108,7 @@
 		{{deleteTrigger 1}}
 
 	{{else if eq $commande "?cd" "?cooldown"}}
-		{{$message := getMessage 734838748721840188 739978392409079839}}
+		{{$message := getMessage $cmd 751797181643489310}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -130,7 +132,7 @@
 		{{deleteTrigger 1}}
 
 	{{else if eq $commande "?echange" "?give" "?échange"}}
-		{{$message := getMessage 734838748721840188 737814952475361350}}
+		{{$message := getMessage $cmd 737814952475361350}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -150,8 +152,8 @@
 		https://cdn.discordapp.com/attachments/701792582362988615/716019302628589618/unknown.png
 
 	{{else if eq $commande "?prix"}}
-		{{$message := getMessage 722755391498485800 747503553307869334}}
-		{{sendMessage nil (index $message.Embeds 0)}}
+		{{$message := getMessage 750331821413367828 750332627747340378}}
+		{{sendMessage nil (complexMessage "content" "" "embed" (index $message.Embeds 0))}}
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
