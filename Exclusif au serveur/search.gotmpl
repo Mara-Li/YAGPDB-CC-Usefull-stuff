@@ -39,7 +39,8 @@
 {{$cg := "**Balle gangrenante** : Balle ayant l'effet d'un poison, avec les mêmes limitations."}}
 
 {{$d:=""}}
-{{$v:="722755391498485800"}}
+{{$r:="722755391498485800"}}
+{{$v := "750331821413367828"}}
 {{$m:=""}}
 {{$k:=""}}
 {{$id:=""}}
@@ -91,51 +92,43 @@
 		{{$d =joinStr "" $di "\n" $cr}}
 	{{else if eq $i "inventaire"}}
 		{{$id ="736003604221001790"}}
-		{{$msg:=getMessage $v $id}}
+		{{$msg:=getMessage $r $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "composant"}}
-		{{$id ="736003719631601775"}}
+		{{$id ="750332012094554212"}}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k =(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "analgésique"}}
-		{{$id ="736003785398288404"}}
+		{{$id ="750332066515648616"}}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "arme biologique" "armes biologiques" "armes biologique" "arme biologiques"}}
-		{{$id ="736004347556528182" }}
+		{{$id ="750332094672142489" }}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "armes" "arme"}}
-		{{$id ="736004668697870336" }}
+		{{$id ="750332207746252810" }}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "module" "modules"}}
-		{{$id ="736004830883086457" }}
+		{{$id ="750332246530981991" }}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "implants" "implant"}}
-		{{$id ="736005099360485388" }}
+		{{$id ="750332296913223700" }}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "Balle" "Balles"}}
-		{{$id ="736006005355315200"}}
+		{{$id ="750332522705190982"}}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
-		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
 	{{else if eq $i "Balle creuse" "creuse"}}
 		{{$d =$cr}}
