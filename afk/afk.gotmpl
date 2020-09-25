@@ -17,12 +17,13 @@
 
 {{ if .CmdArgs }}
 	{{if eq (toFloat (len .CmdArgs)) (toFloat 1)}}
-	{{if hasRoleID $idrole}}
-		{{$duration = 3600}}
-		{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
-		{{deleteMessage $chan $idold}}
-		{{$msg = .CmdArgs}}
-	{{end}}
+		{{if hasRoleID $idrole}}
+			{{$duration = 3600}}
+			{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+			{{deleteMessage $chan $idold}}
+			{{dbDel .User.ID "afkmsg"}}
+			{{$msg = .CmdArgs}}
+		{{end}}
 	{{else if gt (toFloat (len .CmdArgs)) (toFloat 1)}}
 		{{if eq (toFloat (len .CmdArgs)) (toFloat 2)}}
 			{{if eq (index .CmdArgs 0) "-d"}}
@@ -31,13 +32,14 @@
 					{{$duration = (index .CmdArgs 1)}}
 					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
 					{{deleteMessage $chan $idold}}
+					{{dbDel .User.ID "afkmsg"}}
 				{{end}}
 				{{if eq (toInt $duration) (toInt 0)}}
 					"Mauvaise durée d'absence."
 				{{end}}
 				{{$msg = "" }}
 				{{$duration = mult $duration 3600}}
-				{{dbSetExpire .User.ID "afk" $msg (toInt $duration)}}
+				{{dbSet .User.ID "afk" $msg}}
 			{{else}}
 				{{$msg = (joinStr " " "car :" .CmdArgs)}}
 			{{end}}
@@ -48,6 +50,7 @@
 					{{$duration = (index .CmdArgs 1)}}
 					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
 					{{deleteMessage $chan $idold}}
+					{{dbDel .User.ID "afkmsg"}}
 				{{end}}
 				{{if eq (toInt $duration) (toInt 0)}}
 					"Mauvaise durée d'absence."
@@ -58,13 +61,13 @@
 			{{end}}
 		{{end}}
 	{{end}}
-		{{$afkembed := cembed
-			"color" (randInt 111111 999999)
-			"author" (sdict "name" (printf "%s est AFK" .User.Username) "icon_url" (.User.AvatarURL "256"))
-			"description" (joinStr " " "Durant"  (humanizeDurationSeconds (toDuration (joinStr "" $duration "s" ))) $msg)}}
-		{{$id = sendMessageRetID $chan $afkembed }}
-		{{dbSetExpire .User.ID "afkmsg" (str $id) (toInt $duration)}}
-		{{deleteMessage $id (toInt $duration)}}
+	{{$afkembed := cembed
+		"color" (randInt 111111 999999)
+		"author" (sdict "name" (printf "%s est AFK" .User.Username) "icon_url" (.User.AvatarURL "256"))
+		"description" (joinStr " " "Durant"  (humanizeDurationSeconds (toDuration (joinStr "" $duration "s" ))) $msg)}}
+	{{$id = sendMessageRetID $chan $afkembed }}
+	{{dbSet .User.ID "afkmsg" (str $id)}}
+	{{deleteMessage $id $duration}}
 	{{addRoleID $idrole}}
 	{{removeRoleID $idrole $duration}}
 {{else}}

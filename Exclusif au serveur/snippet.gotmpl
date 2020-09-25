@@ -125,21 +125,18 @@
 			"description" (joinStr "" $message.Content )}}
 			{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
-
 	{{else if eq $commande "?jdr"}}
 		→ https://www.jdr-system.ovh/
 		{{deleteTrigger 1}}
-
 	{{else if eq $commande "?archive"}}
 		→ https://mara-li.github.io/Archive-RP/Projet_Nucleus/readme.html
 		{{deleteTrigger 1}}
-	{{else if eq $commande "?wiki"}}
-		→ https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki
+	{{else if eq $commande "?wiki" "?site"}}
+		→ https://www.notion.so/Projet-Nucleus-Help-center-522fa32a4fd143b2a5be398b097dfe7f
 		{{deleteTrigger 1}}
 		{{else if eq $commande "?recensement" "?recens" "?perso" "?char" "?charlist" "?googledoc" "?doc"}}
 		→ https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing
 		{{deleteTrigger 1}}
-
 	{{else if eq $commande "?echange" "?give" "?échange"}}
 		{{$message := getMessage $cmd 737814952475361350}}
 		{{$embed := cembed
