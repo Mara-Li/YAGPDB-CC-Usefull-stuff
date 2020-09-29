@@ -1,5 +1,6 @@
 Note : The documentation and the code is in french.
-
+----
+Some CC are just little edition for the YAGPDB CC repo. 
 ----
 
 [Official website](https://www.notion.so/Projet-Nucleus-Help-center-522fa32a4fd143b2a5be398b097dfe7f)
