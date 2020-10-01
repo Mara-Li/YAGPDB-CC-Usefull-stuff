@@ -10,42 +10,35 @@
 	{{$id = (toInt (index .CmdArgs 0))}}
 {{end}}
 {{$msg:= getMessage $channel $id}}
+{{$rep := ""}}
 {{if $msg.Embeds}}
   {{with (index $msg.Embeds 0)}}
-	{{if not $champ}}
-```
-{{.Description}}
-```
-	{{else if eq $champ "-field" "fields"}}
-		{{ range $i, $field := .Fields }} 
-			{{ add $i 1 }}
-```
-{{ $field.Name }} : {{ $field.Value }}
-```
-		{{ end }}
-	{{else if eq $champ "-footer"}}
-```
-{{.Footer.Text}}
-```
-	{{else if eq $champ "-title"}}
-```
-{{.Title}}
-```
-	{{else if eq $champ "-color"}}
-```
-{{.Color}}
-```
-{{else if eq $champ "-author"}}
-```
-{{.Author.Name}}
-```
+		{{if not $champ}}
+			{{$rep = print  $rep .Description "\n"}}
+		{{else if eq $champ "-field" "fields"}}
+			{{ range $i, $field := .Fields }} 
+				{{ add $i 1 }}
+					{{ $rep = print $rep $field.Name " : " $field.Value "\n" }}
+				{{ end }}
+			{{else if eq $champ "-footer"}}
+				{{$rep = print $rep .Footer.Text "\n"}}
+			{{else if eq $champ "-title"}}
+				{{$rep = print $rep .Title "\n"}}
+			{{else if eq $champ "-color"}}
+				{{$rep = print $rep .Color "\n"}}
+			{{else if eq $champ "-author"}}
+				{{$rep = print $rep .Author.Name "\n"}}
+			{{end}}
+  	{{end}}
 	{{end}}
-  {{end}}
-{{end}}
 {{if $msg.Content}}
-```
-{{$msg.Content}}
-```
+	{{$rep = print "```" .Content "```"}}
 {{end}}
 {{deleteTrigger 1}}
-{{deleteResponse 180}}
+{{if (reFind `-dl` .Message.Content)}}
+	{{$idm := sendMessageRetID nil (complexMessage "content" (print "```" $rep "```") "embed" nil "file" $rep)}}
+	{{deleteMessage nil $idm 180}}
+{{else}}
+	{{$idm := sendMessageRetID nil (print "```" $rep "```")}}
+	{{deleteMessage nil $idm 180}}
+{{end}}
