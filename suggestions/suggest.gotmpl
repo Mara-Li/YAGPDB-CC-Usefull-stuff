@@ -1,7 +1,10 @@
 {{$cmd := reFind `^\$(suggest|sa)` .Message.Content}}
-{{$yes:="this:715708401816043520"}}
-{{$no:=":moins:715708440466554921"}}
-{{$neutral:=":blobshrug:742470860031393924"}}
+{{$yesstr:="this:715708401816043520"}}
+{{$nostr:=":moins:715708440466554921"}}
+{{$neutralstr:=":slash:761006360107941938"}}
+{{$yes:=715708401816043520}}
+{{$no:=715708440466554921}}
+{{$neutral:=761006360107941938}}
 {{ $suggestions := 741805466761560134 }} {{/* Suggestion channel ID */}}
 	{{ $colors := sdict
 		"default" 0x0070BB
@@ -19,7 +22,7 @@
 	{{ $attachment := "" }}
 	{{ with .Message.Attachments }} {{ $attachment = (index . 0).ProxyURL }} {{ end }}
 	{{ if .StrippedMsg }}
-		{{ $id := sendMessageRetID $suggestions (complexMessage "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé ! Vous pouvez en discuter librement dans <#741808846473003088> !") "embed" (cembed 
+		{{ $id := sendMessageNoEscapeRetID $suggestions (complexMessage "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé !\n Vous pouvez en discuter librement dans <#741808846473003088> !") "embed" (cembed 
 			"author" (sdict "name" (printf "Suggestion from %s" .User.String) "icon_url" (.User.AvatarURL "256"))
 			"color" $colors.default
 			"description" .StrippedMsg
@@ -27,16 +30,14 @@
 			"timestamp" currentTime
 			"image" (sdict "url" $attachment)
 		)) }}
-		{{ addMessageReactions $suggestions $id $yes $neutral $no }}
+		{{ addMessageReactions $suggestions $id $yesstr $neutralstr $nostr }}
 		Successfully sent your suggestion to <#{{ $suggestions }}>!
 	{{ else }}
 		You need to provide something to suggest with `$suggest <suggestion>`.
 	{{ end }}
 {{else}}
 	{{ if .CmdArgs }}
-		{{$yes:=715708401816043520}}
-		{{$no:=715708440466554921}}
-		{{$neutral:=742470860031393924}}
+	
 		{{ $id := "" }}
 		{{ $action := "" }}
 		{{ $reason := "" }}
@@ -70,7 +71,7 @@
 				"author" (sdict "name" $suggestion.Author.Name "icon_url" $suggestion.Author.IconURL)
 				"description" $suggestion.Description
 				"color" $color
-				"fields" (cslice (sdict "name" $fieldName "value" (or $reason "")))
+				"fields" (cslice (sdict "name" $fieldName "value" (or $reason "_ _")))
 			}}
 			{{ if $archived }}
 				{{ $ups := 0 }}
@@ -83,11 +84,11 @@
 					{{else if eq $id $neutral }} {{$nes = .Count}}
 					{{ end }}
 				{{- end -}}
-				{{ $embed.Set "footer" (sdict "text" (printf "✔️ %d | ❌ %d | <:blobshrug:742470860031393924> %d" $ups $downs $nes)) }}
+				{{ $embed.Set "footer" (sdict "text" (printf "✔️ %d | 🔘 %d | ❌ %d" $ups $downs $nes)) }}
 				{{ deleteAllMessageReactions $suggestions $id }}
 			{{ end }}
 			{{ if $title }} {{ $embed.Set "title" (printf $title .User.String) }} {{ end }}
-			{{ editMessage $suggestions $id (cembed $embed) }}
+			{{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print  "Hey " (mentionRoleID 723279178253729813) ", la suggestion a été approuvée !")) }}
 			Done!
 		{{ else }}
 			Sorry, the syntax for this command is `$sa <deny|approve|comment> <id> <reason>` (If you are commenting, reason is required).
