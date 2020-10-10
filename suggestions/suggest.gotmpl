@@ -22,7 +22,7 @@
 	{{ $attachment := "" }}
 	{{ with .Message.Attachments }} {{ $attachment = (index . 0).ProxyURL }} {{ end }}
 	{{ if .StrippedMsg }}
-		{{ $id := sendMessageNoEscapeRetID $suggestions (complexMessage "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé !\n Vous pouvez en discuter librement dans <#741808846473003088> !") "embed" (cembed 
+		{{ $id := sendMessageNoEscapeRetID $suggestions (complexMessage "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé !\n Vous pouvez en discuter librement dans <#764499571837239296> !") "embed" (cembed 
 			"author" (sdict "name" (printf "Suggestion from %s" .User.String) "icon_url" (.User.AvatarURL "256"))
 			"color" $colors.default
 			"description" .StrippedMsg
