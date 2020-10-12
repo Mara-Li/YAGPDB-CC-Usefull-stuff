@@ -11,7 +11,7 @@
 {{$poisoncol:=0x370E6A}}
 {{$supportcol:=0x2B7697}}
 {{$id:= ""}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{if $name}}
 	{{$user = $name}}
