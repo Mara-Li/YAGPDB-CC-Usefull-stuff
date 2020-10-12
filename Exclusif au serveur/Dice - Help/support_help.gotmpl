@@ -1,12 +1,13 @@
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$support:=reFindAllSubmatches `^\!(malus|soutien)` .Message.Content}}
-{{$soin:= reFindAllSubmatches `^\!soin` .Message.Content}}
-{{$poison:= reFindAllSubmatches `^\!poison` .Message.Content}}
+{{$support:=reFind `^\!(malus|soutien)` .Message.Content}}
+{{$soin:= reFind `^\!soin` .Message.Content}}
+{{$poison:= reFind `^\!poison` .Message.Content}}
 {{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
 {{$supportimg:="https://i.imgur.com/fuHvIUn.png"}}
 {{$poisonimg:="https://i.imgur.com/CmgNFYu.png"}}
 {{$s := "+"}}
 {{$ec := "Bonus de -"}}
+{{$w := ""}}
 {{$soincol:=0xb66dc1}}
 {{$poisoncol:=0x370E6A}}
 {{$supportcol:=0x2B7697}}
@@ -17,41 +18,41 @@
 	{{$user = $name}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{if .CmdArgs}}
 	{{$d:=(toFloat (index .CmdArgs 0) ) }}
 	{{if $support}}
 		{{if eq $support "!malus"}}
 			{{$s = "+"}}
-			{{$ec = "Bonus de -"}}
+			{{$ec = "bonus de -"}}
 			{{$w ="malus"}}
 		{{else if eq $support "!soutien"}}
 			{{$s = "-"}}
-			{{$ec = "Malus de +"}}
+			{{$ec = "malus de +"}}
 			{{$w = "bonus"}}
 		{{end}}
 		{{if eq $d (toFloat 0)}}
 			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible a un {{$w}} de {{$s}}4."
+				"description" (print " Ultra critique : Votre cible a un " $w " de " $s "4.")
 				"color" $supportcol
 				"author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if or (eq $d (toFloat 1)) (eq $d (toFloat 2) ) }}
 			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible a un {{$w}} de {{$s}}3."
+				"description" (print " Réussite critique : Votre cible a un " $w " de " $s "3.")
 				"color" $supportcol
 				"author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if and (le $d (toFloat 5)) (ge $d (toFloat 3))}}
 			{{$embed:=cembed
-				"description" "Votre cible a un {{$w}} de {{$s}}2."
+				"description" (print "Votre cible a un " $w " de " $s "2.")
 				"color" $supportcol
         "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if  and (le $d (toFloat 8)) (ge $d (toFloat 6))}}
 			{{$embed:=cembed
-				"description" "Votre cible a un {{$w}} de {{$s}}1."
+				"description" (print "Votre cible a un" $w " de " $s "1.")
 				"color" $supportcol
         "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -63,7 +64,7 @@
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 10)}}
 			{{$embed:=cembed
-				"description" "Echec critique : Votre cible a un {{ec}}2."
+				"description" ("Echec critique : Votre cible a un " $ec "2.")
 				"color" $supportcol
         "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -78,13 +79,13 @@
 	{{else if $soin}}
 		{{if eq $d (toFloat 0)}}
 			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible regagne 20 PV et obtient un bonus de votre choix."
+				"description" "Ultra critique : Votre cible regagne 30 PV et obtient un bonus de votre choix."
 				"color" $soincol
 				"author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 1)}}
 			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible regagne 20 PV."
+				"description" "Réussite critique : Votre cible regagne 30 PV."
 				"color" $soincol
         "author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -103,6 +104,7 @@
 		{{else}}
 		{{$regen:= sub 9 $d}}
 		{{$regen = div (mult $regen 5) 2}}
+		{{$regen = roundFloor (mult 1.5 $regen)}}
 		{{$r := cembed
 			"author" (sdict "name" $user "icon_url" $soinimg)
 			"description" (joinStr "" "**Réussite : ** *+" $regen " PV.*\n")
