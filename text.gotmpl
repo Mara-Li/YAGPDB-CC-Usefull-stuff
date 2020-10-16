@@ -32,7 +32,7 @@
   	{{end}}
 	{{end}}
 {{if $msg.Content}}
-	{{$rep = print "```" .Content "```"}}
+	{{$rep = print $msg.Content}}
 {{end}}
 {{deleteTrigger 1}}
 {{if (reFind `-dl` .Message.Content)}}
