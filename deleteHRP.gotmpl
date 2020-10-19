@@ -1,6 +1,6 @@
 {{$cat := .Channel.ParentID}}
-{{if eq $cat 720263038879662120 701379688177598495}} {{/* Mettez les catégories où vous voulez que la commande fonctionne*/}}
-	{{ $matches := reFindAllSubmatches `\((.*?)\)` .Message.Content }}
+{{if eq $cat 764489140972421131 764489022470225961 764488934520127498 764488859299348491 764489250582298654 764489469230841857}}
+	{{ $matches := reFindAllSubmatches `^\((.*)?\)?` .Message.Content }}
 	{{if eq (len (index (index $matches 0) 0)) (len .Message.Content) }}
 		{{deleteTrigger 180}}
 	{{end}} 
