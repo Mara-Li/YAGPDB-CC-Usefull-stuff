@@ -88,7 +88,11 @@
 				{{ deleteAllMessageReactions $suggestions $id }}
 			{{ end }}
 			{{ if $title }} {{ $embed.Set "title" (printf $title .User.String) }} {{ end }}
-			{{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print  "Hey " (mentionRoleID 723279178253729813) ", la suggestion a été approuvée !")) }}
+      {{if eq $action "approve"}}
+			  {{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print  "Hey " (mentionRoleID 723279178253729813) ", la suggestion a été approuvée !")) }}
+      {{else}}
+        {{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé !\n Vous pouvez en discuter librement dans <#741808846473003088> !")) }}
+      {{end}}
 			Done!
 		{{ else }}
 			Sorry, the syntax for this command is `$sa <deny|approve|comment> <id> <reason>` (If you are commenting, reason is required).
@@ -97,3 +101,5 @@
 		Sorry, the syntax for this command is `$sa <deny|approve|comment> <id> <reason>` (If you are commenting, reason is required).
 	{{ end }}
 {{end}}
+{{deleteTrigger 1}}
+{{deleteResponse 15}}
