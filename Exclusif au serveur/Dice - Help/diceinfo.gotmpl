@@ -22,7 +22,7 @@
 {{else if eq $flag "?malus" "?soutien"}}
   {{$embed = cembed
     "title" "Malus de caractéristiques"
-    "Description" "**0** : {{$s}}4 → IMPLANT UNIQUEMENT\n**1** : {{$s}}3\n**2** : {{$s}}3\n**3** : {{$s}}2\n**4**: {{$s}}2\n**5**: {{$s}}2\n**6**: {{$s}}1 \n**7**: {{$s}}1 \n**8**: {{$s}}1\n**9** : Echec\n**10** : EC → {{ec}}2 à l'adversaire"
+    "Description" (print "**0** :" $s "4 → IMPLANT UNIQUEMENT\n**1** :" $s "3\n**2** :" $s "3\n**3** :" $s "2\n**4**:" $s "2\n**5**:" $s "2\n**6**:" $s "1 \n**7**:" $s "1 \n**8**:" $s "1\n**9** : Echec\n**10** : EC →" $ec "2 à l'adversaire")
     "color" 0x2B7697
     "thumbnail" (sdict "url" "https://i.imgur.com/fuHvIUn.png")}}
 
