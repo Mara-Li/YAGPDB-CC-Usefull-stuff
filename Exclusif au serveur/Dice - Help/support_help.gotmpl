@@ -52,7 +52,7 @@
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if  and (le $d (toFloat 8)) (ge $d (toFloat 6))}}
 			{{$embed:=cembed
-				"description" (print "Votre cible a un" $w " de " $s "1.")
+				"description" (print "Votre cible a un " $w " de " $s "1.")
 				"color" $supportcol
         "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
