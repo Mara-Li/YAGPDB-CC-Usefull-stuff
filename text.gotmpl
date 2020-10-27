@@ -13,32 +13,42 @@
 {{$rep := ""}}
 {{if $msg.Embeds}}
   {{with (index $msg.Embeds 0)}}
-		{{if not $champ}}
-			{{$rep = print  $rep .Description "\n"}}
-		{{else if eq $champ "-field" "fields"}}
-			{{ range $i, $field := .Fields }} 
-				{{ add $i 1 }}
-					{{ $rep = print $rep $field.Name " : " $field.Value "\n" }}
-				{{ end }}
-			{{else if eq $champ "-footer"}}
-				{{$rep = print $rep .Footer.Text "\n"}}
-			{{else if eq $champ "-title"}}
-				{{$rep = print $rep .Title "\n"}}
-			{{else if eq $champ "-color"}}
-				{{$rep = print $rep .Color "\n"}}
-			{{else if eq $champ "-author"}}
-				{{$rep = print $rep .Author.Name "\n"}}
-			{{end}}
-  	{{end}}
-	{{end}}
+		{{if eq $champ "-field" "-fields"}}
+			{{ range $i, $j := .Fields }} 
+				{{ $rep = print $rep $j.Name " : \n ```\n" $j.Value "\n ```\n\n" }}
+        {{$i = add $i 1}}
+			{{ end }}
+		{{else if eq $champ "-footer"}}
+			{{$rep = print $rep .Footer.Text "\n"}}
+		{{else if eq $champ "-title"}}
+			{{$rep = print $rep .Title "\n"}}
+		{{else if eq $champ "-color"}}
+			{{$rep = print $rep .Color "\n"}}
+		{{else if eq $champ "-author"}}
+			{{$rep = print $rep .Author.Name "\n"}}
+    {{else}}
+    	{{$rep = print  $rep .Description "\n"}}
+		{{end}}
+  {{end}}
+{{end}}
+{{$content := ""}}
 {{if $msg.Content}}
-	{{$rep = print $msg.Content}}
+	{{$content = print $msg.Content}}
 {{end}}
 {{deleteTrigger 1}}
 {{if (reFind `-dl` .Message.Content)}}
-	{{$idm := sendMessageRetID nil (complexMessage "content" (print "```" $rep "```") "embed" nil "file" $rep)}}
+  {{$content = print "Voici le document demandé ! \n " $content}}
+	{{$idm := sendMessageRetID nil (complexMessage "content" $content "embed" nil "file" $rep)}}
 	{{deleteMessage nil $idm 180}}
 {{else}}
-	{{$idm := sendMessageRetID nil (print "```" $rep "```")}}
-	{{deleteMessage nil $idm 180}}
+  {{if le (len $rep) 2000}}
+	  {{$idm := sendMessageRetID nil (print "```" $rep "```")}}
+    {{$idc := sendMessageRetID nil (print "```" $content "```")}}
+	  {{deleteMessage nil $idm 180}}
+    {{deleteMessage nil $idc 180}}
+  {{else}}
+    {{$content = print "Votre réponse est trop longue, donc voici le fichier le contenant. \n " $content}}
+  	{{$idm := sendMessageRetID nil (complexMessage "content" $content "embed" nil "file" $rep)}}
+    {{deleteMessage nil $idm 180}}
+  {{end}}
 {{end}}

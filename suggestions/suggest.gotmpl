@@ -5,7 +5,9 @@
 {{$yes:=715708401816043520}}
 {{$no:=715708440466554921}}
 {{$neutral:=761006360107941938}}
-{{ $suggestions := 741805466761560134 }} {{/* Suggestion channel ID */}}
+{{ $suggestions := 741805466761560134 }}
+{{$arch := 701792582362988615}}
+{{/* Suggestion channel ID */}}
 	{{ $colors := sdict
 		"default" 0x0070BB
 		"approved" 0x50C878
@@ -84,14 +86,16 @@
 					{{else if eq $id $neutral }} {{$nes = .Count}}
 					{{ end }}
 				{{- end -}}
-				{{ $embed.Set "footer" (sdict "text" (printf "✔️ %d | 🔘 %d | ❌ %d" $ups $downs $nes)) }}
+				{{ $embed.Set "footer" (sdict "text" (printf "✔️ %d | 🔘 %d | ❌ %d" $ups $nes $downs)) }}
 				{{ deleteAllMessageReactions $suggestions $id }}
 			{{ end }}
 			{{ if $title }} {{ $embed.Set "title" (printf $title .User.String) }} {{ end }}
       {{if eq $action "approve"}}
-			  {{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print  "Hey " (mentionRoleID 723279178253729813) ", la suggestion a été approuvée !")) }}
+			  {{ sendMessageNoEscape $arch (complexMessage "embed" $embed "content" (print  "Hey " (mentionRoleID 723279178253729813) ", la suggestion a été approuvée !")) }}
+        {{deleteMessage $suggestions $id}}
       {{else}}
-        {{ editMessageNoEscape $suggestions $id (complexMessageEdit "embed" $embed "content" (print "Hey " (mentionRoleID 723279178253729813) " une nouvelle suggestion a été envoyé !\n Vous pouvez en discuter librement dans <#741808846473003088> !")) }}
+        {{ sendMessageNoEscape $arch (complexMessage "embed" $embed "content" "") }}
+        {{deleteMessage $suggestions $id}}
       {{end}}
 			Done!
 		{{ else }}
