@@ -1,6 +1,6 @@
 {{$cat := .Channel.ParentID}}
-{{if eq $cat 764489140972421131 764489022470225961 764488934520127498 764488859299348491 764489250582298654 764489469230841857}}
-	{{ $matches := reFindAllSubmatches `(((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})((\s+)?)(\<\#\d{17,}\>)?((\s+)?)(>\S+)?)` .Message.Content }}	
+{{if eq $cat 720263038879662120 701379688177598495}}
+ 	{{ $matches := reFindAllSubmatches `(((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})((\s+)?)(\<\#\d{17,}\>)?((\s+)?)(>\S+)?)` .Message.Content }}
 	{{if eq (len (index (index $matches 0) 0)) (len .Message.Content) }}
 		{{deleteTrigger 1}}
 	{{end}}
