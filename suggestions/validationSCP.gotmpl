@@ -23,7 +23,7 @@
     {{else if and (eq .Reaction.Emoji.ID $no) (hasRoleID 786283841701937192)}}
       {{$embed.Set "color" 14492194}}
       {{$embed.Author.Set "name" "SCP - REFUSÉ PAR LE STAFF"}}
-      {{complexMessageEdit "content" "Refusé" "embed" (cembed $embed)}}
+      {{editMessage nil .Message.ID (complexMessageEdit "content" "" "embed" (cembed $embed))}}
     {{end}}
   {{end}}
 {{end}}
