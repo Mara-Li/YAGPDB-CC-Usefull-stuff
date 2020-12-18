@@ -1,26 +1,26 @@
-{{$chan := 788017425215651850}}
-{{if eq .Channel.ID $chan}}
-  {{if or (not (reFind `(?i)((secteur biologique)|(secteur occulte)|(Secteur : Biologique)|(Secteur : Occulte))` .Message.Content)) (not (reFind `(?i)(SCP-(\d+)(-.*)?)( : )?(http://(fondationscp|scp-wiki)\.wikidot\.com/scp-(\d+)(-.*)?)` .Message.Content))}}
-    {{$id := sendMessageRetID nil "Votre message n'est pas au bon format ! Vous savez trois minutes pour le récupérer avant sa suppression. Vous devez le REPOSTER. Pas l'éditer. Je ne lis pas les éditions."}}
-    {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : Occulte/Biologique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
-    {{deleteMessage nil $idT 180}}
-    {{deleteMessage nil $id 180}}
-    {{deleteTrigger 180}}
-  {{else}}
-    {{ $dec := randInt 0 16777216 }}
-    {{ $hex := printf "%06x" $dec }}
-    {{$name := reFind `(?i)(scp-(\d+)(-.\S+)?)` .Message.Content}}
-    {{$desc := reReplace `(?i)(SCP-(\d+)(-.*)?)( : )?(http://(fondationscp|scp-wiki)\.wikidot\.com/scp-(\d+)(-.*)?)` .Message.Content ""}}
-    {{$link := reFind `http://(fondationscp|scp-wiki)\.wikidot\.com/scp-(\d+)(-.*)?` .Message.Content }}
-    {{$sect := title (reFind `(?i)((secteur biologique)|(secteur occulte)|(Secteur : Biologique)|(Secteur : Occulte))` .Message.Content)}}
-    {{$desc := reReplace `(\*\*)?(?i)((secteur biologique)|(secteur occulte)|(Secteur : Biologique)|(Secteur : Occulte))(\*\*)?` $desc ""}}
-    {{$embed := cembed
-    "author" (sdict "name" $sect)
-    "title" $name
-    "url" $link
-    "description" $desc}}
-    {{$idE := sendMessageRetID nil $embed}}
-    {{addMessageReactions nil $idE ":check:781201180041936917" ":div:781201473127055380" ":no:781201202871271425"}}
-    {{deleteTrigger 30}}
-  {{end}}
+{{if or (not (reFind `(?i)(((\*\*)?secteur(\*\*)? biologique)|((\*\*)?secteur(\*\*)? occulte)|((\*\*)?Secteur(\*\*)? : Biologique)|((\*\*)?Secteur(\*\*)? : Occulte))` .Message.Content)) (not (reFind `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?( : )?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?` .Message.Content))}}
+  {{$id := sendMessageRetID nil "Votre message n'est pas au bon format ! Vous savez trois minutes pour le récupérer avant sa suppression. Vous devez le REPOSTER. Pas l'éditer. Je ne lis pas les éditions."}}
+  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : Occulte/Biologique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
+  {{deleteMessage nil $idT 180}}
+  {{deleteMessage nil $id 180}}
+  {{deleteTrigger 180}}
+{{else}}
+  {{ $dec := randInt 0 16777216 }}
+  {{ $hex := printf "%06x" $dec }}
+  {{$name := reFind `(?i)(scp(-?)(\d+)(-.\w+)?)` .Message.Content}}
+  {{$desc := reReplace `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?( : )?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?` .Message.Content ""}}
+  {{$link := reFind `(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?` .Message.Content }}
+  {{$sect := title (reFind `(?i)(((\*\*)?secteur(\*\*)? biologique)|((\*\*)?secteur(\*\*)? occulte)|((\*\*)?Secteur(\*\*)? : Biologique)|((\*\*)?Secteur(\*\*)? : Occulte))` .Message.Content)}}
+  {{$sect := reReplace `\*\*` $sect ""}}
+  {{$desc := reReplace `(\*\*)?(?i)(?i)(((\*\*)?secteur(\*\*)? biologique)|((\*\*)?secteur(\*\*)? occulte)|((\*\*)?Secteur(\*\*)? : Biologique)|((\*\*)?Secteur(\*\*)? : Occulte))(\*\*)?` $desc ""}}
+  {{$embed := cembed
+  "author" (sdict "name" $sect)
+  "title" $name
+  "url" $link
+  "description" $desc
+  "footer" (sdict "text" (print "Proposé par " .User.Username) "icon_url" ((.User.AvatarURL "256")))
+  "color" $hex}}
+  {{$idE := sendMessageRetID nil $embed}}
+  {{addMessageReactions nil $idE ":check:781201180041936917" ":div:781201473127055380" ":no:781201202871271425"}}
+  {{deleteTrigger 30}}
 {{end}}
