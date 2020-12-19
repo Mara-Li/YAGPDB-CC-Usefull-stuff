@@ -6,23 +6,23 @@
 {{$div := 781201473127055380}}
 {{if eq .Channel.ID $chan}}
   {{if .ReactionAdded}}
-  {{$embed := structToSdict (index .Message.Embeds 0) }}
-  {{ range $k, $v := $embed }}
-    {{- if eq (kindOf $v true) "struct" }}
-      {{- $embed.Set $k (structToSdict $v) }}
-    {{- end -}}
-  {{ end }}
+    {{$embed := structToSdict (index .Message.Embeds 0) }}
+    {{ range $k, $v := $embed }}
+      {{- if eq (kindOf $v true) "struct" }}
+        {{- $embed.Set $k (structToSdict $v) }}
+      {{- end -}}
+    {{ end }}
     {{if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
       {{if eq (lower $embed.Author.Name) "secteur biologique" "secteur : biologique" }}
         {{sendMessage $bio (cembed $embed)}}
         {{deleteMessage nil .Message.ID 30}}
-      {{else if eq (lower $embed.Author.Name) "secteur occulte" "secteur : occulte" }}
+      {{else if eq (lower $embed.Author.Name) "secteur ésotérique" "secteur : ésotérique" }}
         {{sendMessage $occ (cembed $embed)}}
         {{deleteMessage nil .Message.ID 30}}
       {{end}}
     {{else if and (eq .Reaction.Emoji.ID $no) (hasRoleID 786283841701937192)}}
       {{$embed.Set "color" 14492194}}
-      {{$embed.Author.Set "name" (print "SCP - REFUSÉ PAR " .User.Username)}}
+      {{$embed.Author.Set "name" (print "SCP - REFUSÉ PAR " (upper .User.Username))}}
       {{editMessage nil .Message.ID (complexMessageEdit "content" "" "embed" (cembed $embed))}}
       {{deleteAllMessageReactions nil .Message.ID}}
     {{end}}

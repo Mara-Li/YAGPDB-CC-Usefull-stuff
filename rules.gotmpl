@@ -1,0 +1,117 @@
+{{$chan := reFind `\-chan` .Message.Content}}
+{{$id := 0}}
+{{$channel := "nil"}}
+{{$name := ""}}
+{{$value := ""}}
+{{$cmd := ""}}
+{{if and $chan (ge (len .CmdArgs) 5)}}
+	{{$channel = (toInt (index .CmdArgs 1))}}
+	{{$id = (toInt (index .CmdArgs 2)) }}
+  {{$cmd = index .CmdArgs 3}}
+{{else if and (not $chan) (ge (len .CmdArgs) 3)}}
+	{{$channel = .Channel.ID}}
+	{{$id = (toInt (index .CmdArgs 0))}}
+  {{$cmd = index .CmdArgs 1}}
+{{end}}
+{{$msg:= getMessage $channel $id}}
+{{$field := sdict}}
+{{$fields := cslice}}
+{{if $msg.Embeds}}
+  {{$embed := structToSdict (index $msg.Embeds 0) }}
+  {{range $k, $v := $embed }}
+    {{- if eq (kindOf $v true) "struct" }}
+      {{- $embed.Set $k (structToSdict $v) }}
+    {{- end -}}
+  {{ end }}
+  {{$cont := ""}}
+  {{if $msg.Content}}
+    {{$cont = print $msg.Content}}
+  {{end}}
+  {{if eq $msg.Author.ID 204255221017214977}}
+    {{if eq $cmd "add" "-add"}}
+      {{if and $chan (ge (len .CmdArgs) 5)}}
+        {{$name = index .CmdArgs 4}}
+        {{$value = index .CmdArgs 5}}
+      {{else if and (not $chan) (ge (len .CmdArgs) 3)}}
+        {{$name = index .CmdArgs 2}}
+        {{$value = index .CmdArgs 3}}
+      {{end}}
+      {{if (ne $name "" )}}
+        {{with (index $msg.Embeds 0)}}
+          {{if .Fields }}
+            {{range $i, $j := .Fields}}
+              {{$field.Set "name" $j.Name}}
+              {{$field.Set "value" $j.Value}}
+              {{$fields = $fields.Append $field}}
+              {{$field = sdict}}
+            {{end}}
+          {{end}}
+        {{end}}
+        {{$f := sdict}}
+        {{if eq $value ""}}
+          {{$value = "_ _"}}
+        {{end}}
+        {{$f.Set "value" $value}}
+        {{$f.Set "name" $name}}
+        {{$fields = $fields.Append $f}}
+        {{$embed.Set "fields" $fields}}
+        {{$embed = cembed $embed}}
+        {{editMessage $channel $id (complexMessageEdit "content" $cont "embed" $embed)}}
+        Done !
+      {{end}}
+    {{else if eq $cmd "-remove" "-rm"}}
+      {{if and $chan (ge (len .CmdArgs) 4)}}
+        {{$name = index .CmdArgs 4}}
+      {{else if and (not $chan) (ge (len .CmdArgs) 2)}}
+        {{$name = index .CmdArgs 2}}
+      {{end}}
+      {{with (index $msg.Embeds 0)}}
+        {{if .Fields}}
+          {{range $i, $j := .Fields}}
+            {{if ne (title $j.Name) (title $name)}}
+              {{$field.Set "name" $j.Name}}
+              {{$field.Set "value" $j.Value}}
+              {{$fields = $fields.Append $field}}
+              {{$field = sdict}}
+            {{else if eq (title $j.Name) (title $name)}}
+            {{end}}
+          {{end}}
+        {{end}}
+      {{end}}
+        {{$embed.Set "fields" $fields}}
+        {{$embed = cembed $embed}}
+        {{editMessage $channel $id (complexMessageEdit "content" $cont "embed" $embed)}}
+        Done !
+    {{else if eq $cmd "-edit" "-ed"}}
+      {{if and $chan (ge (len .CmdArgs) 5)}}
+        {{$name = index .CmdArgs 4}}
+        {{$value = index .CmdArgs 5}}
+      {{else if and (not $chan) (ge (len .CmdArgs) 3)}}
+        {{$name = index .CmdArgs 2}}
+        {{$value = index .CmdArgs 3}}
+      {{end}}
+      {{with (index $msg.Embeds 0)}}
+        {{if .Fields}}
+          {{range $i, $j := .Fields}}
+            {{if ne (title $j.Name) (title $name)}}
+              {{$field.Set "name" $j.Name}}
+              {{$field.Set "value" $j.Value}}
+              {{$fields = $fields.Append $field}}
+            {{else if eq (title $j.Name) (title $name)}}
+              {{$field.Set "name" $j.Name}}
+              {{$field.Set "value" $value}}
+              {{$fields = $fields.Append $field}}
+            {{end}}
+            {{$field = sdict}}
+          {{end}}
+        {{end}}
+      {{end}}
+      {{$embed.Set "fields" $fields}}
+      {{$embed = cembed $embed}}
+      {{editMessage $channel $id (complexMessageEdit "content" $cont "embed" $embed)}}
+      Done !
+    {{end}}
+  {{end}}
+{{end}}
+{{deleteTrigger 1}}
+{{deleteResponse 30}}
