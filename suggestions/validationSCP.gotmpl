@@ -13,6 +13,8 @@
       {{- end -}}
     {{ end }}
     {{if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
+      {{$embed.Footer.Set "text" (print "Validé par" (title .User.Username))}}
+      {{$embed.Footer.Set "Icon_URL" (.User.AvatarURL "256")}}
       {{if eq (lower $embed.Author.Name) "secteur biologique" "secteur : biologique" }}
         {{sendMessage $bio (cembed $embed)}}
         {{deleteMessage nil .Message.ID 30}}
