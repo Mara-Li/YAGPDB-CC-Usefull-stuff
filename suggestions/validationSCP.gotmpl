@@ -28,10 +28,14 @@
     {{else if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
       {{$embed.Set "Footer" (sdict "text" (print "Validé par " (title .User.Username)) "Icon_URL" (.User.AvatarURL "256"))}}
       {{if eq (lower $embed.Author.Name) "secteur biologique" "secteur : biologique" }}
+        {{$embed.Author.Set "name" "Secteur : Biologique"}}
+        {{$embed.Set "color" 6408587}}
         {{sendMessage $bio (cembed $embed)}}
         {{addMessageReactions nil .Message.ID "🎉"}}
         {{deleteMessage nil .Message.ID 30}}
       {{else if eq (lower $embed.Author.Name) "secteur ésotérique" "secteur : ésotérique" "secteur : occulte" "secteur occulte" "secteur : esotérique" "secteur esotérique" "secteur : ésoterique" "secteur ésoterique" "secteur esoterique" "secteur : esoterique" }}
+        {{$embed.Set "color" 9403866}}
+        {{$embed.Author.Set "name" "Secteur : Ésotérique"}}
         {{sendMessage $occ (cembed $embed)}}
         {{addMessageReactions nil .Message.ID "🎉"}}
         {{deleteMessage nil .Message.ID 30}}
