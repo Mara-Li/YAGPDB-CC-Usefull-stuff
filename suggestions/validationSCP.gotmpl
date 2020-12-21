@@ -12,18 +12,33 @@
         {{- $embed.Set $k (structToSdict $v) }}
       {{- end -}}
     {{ end }}
-    {{if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
-      {{$embed.Footer.Set "text" (print "Validé par" (title .User.Username))}}
-      {{$embed.Footer.Set "Icon_URL" (.User.AvatarURL "256")}}
+    {{ if $embed.Author }} 
+      {{ $embed.Author.Set "Icon_URL" $embed.Author.IconURL }} 
+    {{ end }}
+    {{if eq .Reaction.Emoji.Name "📱"}}
+      {{$rep := print "```\n" $embed.Description "\n ```"}}
+      {{sendDM $rep}}
+    {{else if and (eq .Reaction.Emoji.Name "🗑️")}}
+      {{$tex := reFind .User.Username $embed.Footer.Text}}
+      {{if $tex}}
+        {{deleteMessage nil .Message.ID 0}}
+        {{print "Message supprimé"}}
+        {{deleteResponse 10}}
+      {{end}}
+    {{else if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
+      {{$embed.Set "Footer" (sdict "text" (print "Validé par " (title .User.Username)) "Icon_URL" (.User.AvatarURL "256"))}}
       {{if eq (lower $embed.Author.Name) "secteur biologique" "secteur : biologique" }}
         {{sendMessage $bio (cembed $embed)}}
+        {{addMessageReactions nil .Message.ID "🎉"}}
         {{deleteMessage nil .Message.ID 30}}
-      {{else if eq (lower $embed.Author.Name) "secteur ésotérique" "secteur : ésotérique" }}
+      {{else if eq (lower $embed.Author.Name) "secteur ésotérique" "secteur : ésotérique" "secteur : occulte" "secteur occulte" "secteur : esotérique" "secteur esotérique" "secteur : ésoterique" "secteur ésoterique" "secteur esoterique" "secteur : esoterique" }}
         {{sendMessage $occ (cembed $embed)}}
+        {{addMessageReactions nil .Message.ID "🎉"}}
         {{deleteMessage nil .Message.ID 30}}
       {{end}}
     {{else if and (eq .Reaction.Emoji.ID $no) (hasRoleID 786283841701937192)}}
       {{$embed.Set "color" 14492194}}
+      {{$embed.Footer.Set "text" $embed.Author.Name}}
       {{$embed.Author.Set "name" (print "SCP - REFUSÉ PAR " (upper .User.Username))}}
       {{editMessage nil .Message.ID (complexMessageEdit "content" "" "embed" (cembed $embed))}}
       {{deleteAllMessageReactions nil .Message.ID}}

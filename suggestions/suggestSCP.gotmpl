@@ -1,30 +1,40 @@
-{{$regSect := `(?i)(\*\*)?(((\*\*)?secteur(\*\*)? biologique)|((\*\*)?secteur(\*\*)? (é|e)sotérique)|((\*\*)?Secteur(\*\*)? : Biologique)|((\*\*)?Secteur(\*\*)? : (é|e)sotérique))(\*\*)?`}}
-{{$regLink := `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?( : )?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?`}}
+{{$regSect := `(?i)(\*\*)?((Secteur(\*\*)?(\s+)?(:)?(\s+)?(\*\*)?(biologique|((é|e)sot(é|e)rique)))|(biologique|(e|é)sot(é|e)rique))(\*\*)?` }}
+{{$regSS := lower (reFind `(?i)(biologique|((é|e)sot(é|e)rique)` $regSect)}}
+{{$regLink := `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?(\s+)?(:)?(\s+)?(\<)?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?(\>)?`}}
 {{$regElink := `(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?`}}
 {{$regTit := `(?i)(scp(-?)(\d+)(-.\w+)?)`}}
 {{if or (not (reFind $regSect .Message.Content)) (not (reFind $regLink .Message.Content))}}
   {{$id := sendMessageRetID nil "Votre message n'est pas au bon format ! Vous savez trois minutes pour le récupérer avant sa suppression. Vous devez le REPOSTER. Pas l'éditer. Je ne lis pas les éditions."}}
-  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : ésotérique/Biologique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
+  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : Ésotérique/Biologique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
   {{deleteMessage nil $idT 180}}
   {{deleteMessage nil $id 180}}
   {{deleteTrigger 180}}
 {{else}}
-  {{ $dec := randInt 0 16777216 }}
-  {{ $hex := printf "%06x" $dec }}
+  {{$col := 0xC7DDE4}}
   {{$name := reFind $regTit .Message.Content}}
   {{$desc := reReplace $regLink .Message.Content ""}}
   {{$link := reFind $regElink .Message.Content }}
-  {{$sect := title (reFind $regSect .Message.Content)}}
-  {{$sect := reReplace `\*\*` $sect ""}}
-  {{$desc := reReplace $regSect $desc ""}}
+  {{$sect := title (lower (reFind $regSect .Message.Content))}}
+  {{$icon := ""}}
+  {{$sect = reReplace `\*\*` $sect ""}}
+  {{if eq $regSS "biologique" "Biologique"}}
+    {{$sect = "Secteur : Biologique"}}
+    {{$col = 0x7DDA98}}
+    {{$icon = "https://i.imgur.com/DOlYH5B.png"}}
+  {{else if eq $regSS "ésotérique" "ésoterique" "esoterique" "esotérique"}}
+    {{$sect = title ("Secteur : ésotérique")}}
+    {{$col = 0x8F7DDA}}
+    {{$icon = "https://i.imgur.com/u2cSp8p.png"}}
+  {{end}}
+  {{$desc = reReplace $regSect $desc ""}}
   {{$embed := cembed
-  "author" (sdict "name" $sect)
+  "author" (sdict "name" $sect "icon_url" $icon)
   "title" $name
   "url" $link
   "description" $desc
   "footer" (sdict "text" (print "Proposé par " .User.Username) "icon_url" ((.User.AvatarURL "256")))
-  "color" $dec}}
+  "color" $col}}
   {{$idE := sendMessageRetID nil $embed}}
-  {{addMessageReactions nil $idE ":check:781201180041936917" ":div:781201473127055380" ":no:781201202871271425"}}
+  {{addMessageReactions nil $idE ":check:781201180041936917" ":div:781201473127055380" ":no:781201202871271425" "🗑️" "📱"}}
   {{deleteTrigger 30}}
 {{end}}
