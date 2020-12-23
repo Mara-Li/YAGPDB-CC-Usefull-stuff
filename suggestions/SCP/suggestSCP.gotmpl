@@ -1,5 +1,5 @@
 {{$regSect := `(?i)(\*\*)?((Secteur(\*\*)?(\s+)?(:)?(\s+)?(\*\*)?(biologique|((é|e)sot(é|e)rique)))|(biologique|(e|é)sot(é|e)rique))(\*\*)?` }}
-{{$regSS := lower (reFind `(?i)(biologique|((é|e)sot(é|e)rique)` $regSect)}}
+{{$regSS := `(?i)(biologique|((é|e)sot(é|e)rique))`}}
 {{$regLink := `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?(\s+)?(:)?(\s+)?(\<)?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?(\>)?`}}
 {{$regElink := `(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?`}}
 {{$regTit := `(?i)(scp(-?)(\d+)(-.\w+)?)`}}
@@ -15,21 +15,22 @@
   {{$desc := reReplace $regLink .Message.Content ""}}
   {{$link := reFind $regElink .Message.Content }}
   {{$sect := title (lower (reFind $regSect .Message.Content))}}
+  {{$sect = (lower (reFind $regSS $sect))}}
   {{$icon := ""}}
   {{$sect = reReplace `\*\*` $sect ""}}
-  {{if eq $regSS "biologique" "Biologique"}}
+  {{if eq $sect "biologique" "Biologique"}}
     {{$sect = "Secteur : Biologique"}}
     {{$col = 0x61c98b}}
     {{$icon = "https://i.imgur.com/DOlYH5B.png"}}
-  {{else if eq $regSS "ésotérique" "ésoterique" "esoterique" "esotérique"}}
+  {{else if eq $sect "ésotérique" "ésoterique" "esoterique" "esotérique"}}
     {{$sect = title ("Secteur : ésotérique")}}
     {{$col = 0x8F7DDA}}
-    {{$icon = "https://i.imgur.com/u2cSp8p.png"}}
+    {{$icon = "https://i.imgur.com/iToj5OZ.png"}}
   {{end}}
   {{$desc = reReplace $regSect $desc ""}}
   {{$embed := cembed
   "author" (sdict "name" $sect "icon_url" $icon)
-  "title" $name
+  "title" (upper $name)
   "url" $link
   "description" $desc
   "footer" (sdict "text" (print "Proposé par " .User.Username) "icon_url" ((.User.AvatarURL "256")))

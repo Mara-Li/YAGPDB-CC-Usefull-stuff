@@ -1,0 +1,16 @@
+{{$ticketmsg := toInt (dbGet .Channel.ID "ticketmsg").Value}}
+{{if and (eq .Message.ID 790746523184267264) (eq .Reaction.Emoji.Name "📝")}}
+  {{$user := .Member.Nick}}
+  {{if eq (len $user) 0}}
+    {{$user = .User.Username}}
+  {{end}}
+  {{exec "ticket open" (print "fiche " $user)}}
+  {{deleteMessageReaction nil 790746523184267264 .User.ID "📝"}}
+{{else if and (eq .Reaction.Emoji.Name "🗑️") (eq (toInt .Reaction.MessageID) $ticketmsg) }}
+  {{exec "tickets close"}}
+{{else if and (eq .Reaction.Emoji.Name "📑") (eq (toInt .Reaction.MessageID) $ticketmsg) }}
+  {{sendDM (cembed "title" (print "Retranscription pour " .Channel.Name "!") "description" (print "[**Click**](" (execAdmin "logs") ")" ))}}
+  {{.User.Mention}} Va voir dans tes DM !
+  {{deleteMessageReaction nil .Reaction.MessageID .Reaction.UserID `📑`}}
+{{end}}
+{{deleteResponse 0}}

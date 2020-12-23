@@ -15,6 +15,7 @@
     {{ if $embed.Author }} 
       {{ $embed.Author.Set "Icon_URL" $embed.Author.IconURL }} 
     {{ end }}
+    {{$embed.Set "title" (upper $embed.Title)}}
     {{if eq .Reaction.Emoji.Name "📱"}}
       {{$rep := print "```\n" $embed.Description "\n ```"}}
       {{sendDM $rep}}

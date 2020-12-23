@@ -1,0 +1,5 @@
+{{editChannelName nil (reReplace `\d+` (getChannel nil).Name "")}}
+{{$id := sendMessageRetID nil (print "✅ " .User.Mention " Ton channel a été créée ! Tu peux noter tout ce que tu souhaites, poser tes questions... Et quand tu auras fini, envoie nous ta fiche ! \n \n Quand tu considères que tout est validé, tu peux fermer ton channel en réagissant à ce message avec 🗑️. \n\n <:next:780790919297368096> Au besoin, tu peux rajouter quelqu'un sur le channel avec `$ticket adduser @mention` \n <:next:780790919297368096> Tu peux retrouver une retranscription (les logs) du channel à l'aide de l'émoji 📑") }}
+{{addMessageReactions nil $id "🗑️" "📑"}}
+{{$msget := getMessage nil $id}}
+{{dbSet .Channel.ID "ticketmsg" (toString $msget.ID)}}

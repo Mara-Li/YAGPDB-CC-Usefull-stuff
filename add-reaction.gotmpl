@@ -1,0 +1,10 @@
+{{if .CmdArgs}}
+  {{$id := 0}}
+  {{$emo := ""}}
+  {{$id = (index .CmdArgs 0)}}
+  {{$emo = (slice .CmdArgs 1)}}
+  {{range $emo}}
+    {{addMessageReactions nil $id .}}
+  {{end}}
+{{end}}
+{{deleteTrigger 1}}
