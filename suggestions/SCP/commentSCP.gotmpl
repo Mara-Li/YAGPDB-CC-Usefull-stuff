@@ -6,7 +6,7 @@
   {{if eq (len .CmdArgs) 2}}
     {{ $reason :=  joinStr "" (slice .CmdArgs 1)}}
     {{$id := index .CmdArgs 0}}
-    {{$msg := getMessage 788017425215651850 $id}}
+    {{$msg := getMessage nil $id}}
     {{if $msg.Embeds }}
       {{$embed := structToSdict (index $msg.Embeds 0) }}
       {{ range $k, $v := $embed }}
@@ -30,13 +30,13 @@
       {{$fields = $fields.Append $f}}
       {{$embed.Set "fields" $fields}}
       {{$embed = cembed $embed}}
-      {{editMessage 788017425215651850 $id (complexMessageEdit "content" "" "embed" $embed)}}
+      {{editMessage nil $id (complexMessageEdit "content" "" "embed" $embed)}}
     {{end}}
   {{end}}
 {{else if eq .Cmd "$decom" "$decomment" "$rmcom" "$comrm" "$decomm" }}
   {{if eq (len .CmdArgs) 1}}
     {{$id := index .CmdArgs 0}}
-    {{$msg := getMessage 788017425215651850 $id}}
+    {{$msg := getMessage nil $id}}
     {{$user := .User.String}}
     {{if $msg.Embeds }}
       {{$embed := structToSdict (index $msg.Embeds 0) }}
@@ -60,7 +60,7 @@
       {{end}}
       {{$embed.Set "fields" $fields}}
       {{$embed = cembed $embed}}
-      {{editMessage 788017425215651850 $id (complexMessageEdit "content" "" "embed" $embed)}}
+      {{editMessage nil $id (complexMessageEdit "content" "" "embed" $embed)}}
     {{end}}
   {{end}}
 {{end}}
