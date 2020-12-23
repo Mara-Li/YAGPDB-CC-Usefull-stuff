@@ -18,6 +18,7 @@
   {{$sect = (lower (reFind $regSS $sect))}}
   {{$icon := ""}}
   {{$sect = reReplace `\*\*` $sect ""}}
+  {{$img := reFind `((http:\/\/)?(fondationscp|scp-wiki)\.wdfiles\.com\/(.*))` $desc}}
   {{if eq $sect "biologique" "Biologique"}}
     {{$sect = "Secteur : Biologique"}}
     {{$col = 0x61c98b}}
@@ -28,13 +29,25 @@
     {{$icon = "https://i.imgur.com/iToj5OZ.png"}}
   {{end}}
   {{$desc = reReplace $regSect $desc ""}}
-  {{$embed := cembed
+  {{$msg := cembed
   "author" (sdict "name" $sect "icon_url" $icon)
   "title" (upper $name)
   "url" $link
   "description" $desc
   "footer" (sdict "text" (print "Proposé par " .User.Username) "icon_url" ((.User.AvatarURL "256")))
   "color" $col}}
+  {{$embed := structToSdict $msg}}
+  {{ range $k, $v := $embed}}
+     {{- if eq (kindOf $v true) "struct" }}
+       {{- $embed.Set $k (structToSdict $v) }}
+     {{- end -}}
+  {{ end }}
+  {{if $img}}
+    {{$desc = reReplace `((http:\/\/)?(fondationscp|scp-wiki)\.wdfiles\.com\/(.*))` $desc ""}}
+    {{$embed.Set "image" (sdict "url" $img)}}
+    {{$embed.Set "description" $desc}}
+  {{end}}
+  {{$embed = cembed $embed}}
   {{$idE := sendMessageRetID nil $embed}}
   {{addMessageReactions nil $idE ":check:781201180041936917" ":div:781201473127055380" ":no:781201202871271425" "🗑️" "📱"}}
   {{deleteTrigger 30}}
