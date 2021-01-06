@@ -1,11 +1,9 @@
-{{$regSect := `(?i)(\*\*)?((Secteur(\*\*)?(\s+)?(:)?(\s+)?(\*\*)?(biologique|((é|e)sot(é|e)rique)))|(biologique|(e|é)sot(é|e)rique))(\*\*)?` }}
-{{$regSS := `(?i)(biologique|((é|e)sot(é|e)rique))`}}
 {{$regLink := `(\*\*)?(?i)(SCP(-?)(\s)?(\d+)(-)?(\s)?(.*)?)(\*\*)?(\s+)?(:)?(\s+)?(\<)?(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?(\>)?`}}
 {{$regElink := `(http://(fondationscp\.wikidot)|(www\.scpwiki))\.com/scp-(\d+)(-.*)?`}}
 {{$regTit := `(?i)(scp(-?)(\d+)(-.\w+)?)`}}
-{{if or (not (reFind $regSect .Message.Content)) (not (reFind $regLink .Message.Content))}}
+{{if or (not (reFind $regTit .Message.Content)) (not (reFind $regLink .Message.Content))}}
   {{$id := sendMessageRetID nil "Votre message n'est pas au bon format ! Vous savez trois minutes pour le récupérer avant sa suppression. Vous devez le REPOSTER. Pas l'éditer. Je ne lis pas les éditions."}}
-  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : Ésotérique/Biologique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
+  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n **SECTEUR : Ésotérique** \n **Nom du SCP** : lien \n *Description résumée*\n``` "}}
   {{deleteMessage nil $idT 180}}
   {{deleteMessage nil $id 180}}
   {{deleteTrigger 180}}
@@ -14,23 +12,10 @@
   {{$name := reFind $regTit .Message.Content}}
   {{$desc := reReplace $regLink .Message.Content ""}}
   {{$link := reFind $regElink .Message.Content }}
-  {{$sect := title (lower (reFind $regSect .Message.Content))}}
-  {{$sect = (lower (reFind $regSS $sect))}}
-  {{$icon := ""}}
-  {{$sect = reReplace `\*\*` $sect ""}}
   {{$img := reFind `((http:\/\/)?(fondationscp|scp-wiki)\.wdfiles\.com\/(.*))` $desc}}
-  {{if eq $sect "biologique" "Biologique"}}
-    {{$sect = "Secteur : Biologique"}}
-    {{$col = 0x61c98b}}
-    {{$icon = "https://i.imgur.com/DOlYH5B.png"}}
-  {{else if eq $sect "ésotérique" "ésoterique" "esoterique" "esotérique"}}
-    {{$sect = title ("Secteur : ésotérique")}}
-    {{$col = 0x8F7DDA}}
-    {{$icon = "https://i.imgur.com/iToj5OZ.png"}}
-  {{end}}
-  {{$desc = reReplace $regSect $desc ""}}
+  {{$col = 0x8F7DDA}}
+  {{$icon := "https://i.imgur.com/iToj5OZ.png"}}
   {{$msg := cembed
-  "author" (sdict "name" $sect "icon_url" $icon)
   "title" (upper $name)
   "url" $link
   "description" $desc
