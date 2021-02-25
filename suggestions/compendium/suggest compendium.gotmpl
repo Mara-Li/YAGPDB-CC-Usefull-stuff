@@ -1,0 +1,36 @@
+{{$regTit := `(?i)(nom (:?) (.*))$`}}
+{{if (not (reFind $regTit .Message.Content))}}
+  {{$id := sendMessageRetID nil "Votre message n'est pas au bon format ! Vous savez trois minutes pour le récupérer avant sa suppression. Vous devez le REPOSTER. Pas l'éditer. Je ne lis pas les éditions."}}
+  {{$idT := sendMessageRetID nil "Le format est le suivant : \n```md\n Nom : \n Type : \n Description : \n Effet : \n (lien vers une image, facultatif)``` "}}
+  {{deleteMessage nil $idT 180}}
+  {{deleteMessage nil $id 180}}
+  {{deleteTrigger 180}}
+{{else}}
+  {{$col := 0xC7DDE4}}
+  {{$name := reFind $regTit .Message.Content}}
+  {{$name = reReplace `(?i)nom(:?)` .Message.Content ""}}
+  {{$desc := reReplace $regTit .Message.Content}}
+  {{$img := reFind `((http(s?):\/\/)?(www.(.*).(png|jpg|gif)` $desc}}
+  {{$col = 0x8F7DDA}}
+  {{$icon := "https://i.imgur.com/z7oWZOC.png"}}
+  {{$msg := cembed
+  "title" (upper $name)
+  "description" $desc
+  "footer" (sdict "text" (print "Proposé par " .User.Username) "icon_url" ((.User.AvatarURL "256")))
+  "color" $col}}
+  {{$embed := structToSdict $msg}}
+  {{ range $k, $v := $embed}}
+     {{- if eq (kindOf $v true) "struct" }}
+       {{- $embed.Set $k (structToSdict $v) }}
+     {{- end -}}
+  {{ end }}
+  {{if $img}}
+    {{$desc = reReplace $img $desc ""}}
+    {{$embed.Set "image" (sdict "url" $img)}}
+    {{$embed.Set "description" $desc}}
+  {{end}}
+  {{$embed = cembed $embed}}
+  {{$idE := sendMessageRetID nil $embed}}
+  {{addMessageReactions nil $idE "✅" "*️⃣" "❌"}}
+  {{deleteTrigger 30}}
+{{end}}

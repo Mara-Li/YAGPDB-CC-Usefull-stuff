@@ -1,8 +1,6 @@
-{{$occ := 789157819848458290}}
-{{$chan := 788017425215651850}}
-{{$yes := 781201180041936917}}
-{{$no := 781201202871271425}}
-{{$div := 781201473127055380}}
+{{$occ := 814206096528900107}}
+{{$chan := 814208095537725460}}
+{{$staff := 808837717520547881}}
 {{if eq .Channel.ID $chan}}
   {{if .ReactionAdded}}
     {{$embed := structToSdict (index .Message.Embeds 0) }}
@@ -12,26 +10,21 @@
       {{- end -}}
     {{ end }}
     {{$embed.Set "title" (upper $embed.Title)}}
-    {{if eq .Reaction.Emoji.Name "📱"}}
-      {{$rep := print "```\n" $embed.Description "\n ```"}}
-      {{sendDM $rep}}
-    {{else if and (eq .Reaction.Emoji.Name "🗑️")}}
-      {{$tex := reFind .User.Username $embed.Footer.Text}}
-      {{if $tex}}
-        {{deleteMessage nil .Message.ID 0}}
-        {{print "Message supprimé"}}
-        {{deleteResponse 10}}
-      {{end}}
-    {{else if and (eq .Reaction.Emoji.ID $yes) (hasRoleID 786283841701937192)}}
+    {{$tex := reFind .User.Username $embed.Footer.Text}}
+    {{if and (eq .Reaction.Emoji.Name "🗑️") $tex}}
+      {{deleteMessage nil .Message.ID 0}}
+      {{print "Message supprimé"}}
+      {{deleteResponse 10}}
+    {{else if and (eq .Reaction.Emoji.ID "📥") (hasRoleID $staff)}}
       {{$embed.Set "Footer" (sdict "text" (print "Validé par " (title .User.Username)) "Icon_URL" (.User.AvatarURL "256"))}}
       {{$embed.Set "color" 9403866}}
       {{sendMessage $occ (cembed $embed)}}
       {{addMessageReactions nil .Message.ID "🎉"}}
       {{deleteMessage nil .Message.ID 30}}
-    {{else if and (eq .Reaction.Emoji.ID $no) (hasRoleID 786283841701937192)}}
+    {{else if and (eq .Reaction.Emoji.ID "⛔") (hasRoleID $staff)}}
       {{$embed.Set "color" 14492194}}
       {{$embed.Footer.Set "text" $embed.Author.Name}}
-      {{$embed.Author.Set "name" (print "SCP - REFUSÉ PAR " (upper .User.Username))}}
+      {{$embed.Author.Set "name" (print "REFUSÉ PAR " (upper .User.Username))}}
       {{editMessage nil .Message.ID (complexMessageEdit "content" "" "embed" (cembed $embed))}}
       {{deleteAllMessageReactions nil .Message.ID}}
     {{end}}

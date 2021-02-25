@@ -1,0 +1,69 @@
+
+{{ $fieldName := printf "Commentaire de %s" .User.String }}
+{{$fields := cslice}}
+{{$field := sdict}}
+{{$staff := 808837717520547881}}
+{{if hasRoleID $staff}}
+  {{if eq .Cmd "$comment" "$comm" "$com" }}
+    {{if eq (len .CmdArgs) 2}}
+      {{ $reason :=  joinStr "" (slice .CmdArgs 1)}}
+      {{$id := index .CmdArgs 0}}
+      {{$msg := getMessage nil $id}}
+      {{if $msg.Embeds }}
+        {{$embed := structToSdict (index $msg.Embeds 0) }}
+        {{ range $k, $v := $embed }}
+          {{- if eq (kindOf $v true) "struct" }}
+            {{- $embed.Set $k (structToSdict $v) }}
+          {{- end -}}
+        {{ end }}
+        {{with (index $msg.Embeds 0)}}
+          {{if .Fields }}
+            {{range $i, $j := .Fields}}
+              {{$field.Set "name" $j.Name}}
+              {{$field.Set "value" $j.Value}}
+              {{$fields = $fields.Append $field}}
+              {{$field = sdict}}
+            {{end}}
+          {{end}}
+        {{end}}
+        {{$f := sdict}}
+        {{$f.Set "name" $fieldName}}
+        {{$f.Set "value" $reason}}
+        {{$fields = $fields.Append $f}}
+        {{$embed.Set "fields" $fields}}
+        {{$embed = cembed $embed}}
+        {{editMessage nil $id (complexMessageEdit "content" "" "embed" $embed)}}
+      {{end}}
+    {{end}}
+  {{else if eq .Cmd "$decom" "$decomment" "$rmcom" "$comrm" "$decomm" }}
+    {{if eq (len .CmdArgs) 1}}
+      {{$id := index .CmdArgs 0}}
+      {{$msg := getMessage nil $id}}
+      {{$user := .User.String}}
+      {{if $msg.Embeds }}
+        {{$embed := structToSdict (index $msg.Embeds 0) }}
+        {{ range $k, $v := $embed }}
+          {{- if eq (kindOf $v true) "struct" }}
+            {{- $embed.Set $k (structToSdict $v) }}
+          {{- end -}}
+        {{ end }}
+        {{with (index $msg.Embeds 0)}}
+          {{if .Fields }}
+            {{range $i, $j := .Fields}}
+              {{if not (reFind $user $j.Name)}}
+                {{$field.Set "name" $j.Name}}
+                {{$field.Set "value" $j.Value}}
+                {{$fields = $fields.Append $field}}
+                {{$field = sdict}}
+              {{else}}
+              {{end}}
+            {{end}}
+          {{end}}
+        {{end}}
+        {{$embed.Set "fields" $fields}}
+        {{$embed = cembed $embed}}
+        {{editMessage nil $id (complexMessageEdit "content" "" "embed" $embed)}}
+      {{end}}
+    {{end}}
+  {{end}}
+{{end}}
