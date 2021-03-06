@@ -1,13 +1,15 @@
 This function delete the "HRP" - text starting with `(` - in some category.
 
-First : You need to configure it with the `rmc.yag` file, who work like that :
+# FIRST : Configure `rmc.yag`
    
-   **Usage** : `$rmc <category ID>` 
+**Command and usage** : `$rmc <category ID>` 
 
 You can :
 - Use it in a channel, with only `$rmc`. It will add the category linked to the channel where you use the command
 - Add directly a list of category ID
 - Add one category.
+
+# SECOND : Add the `deleteHRP.yag`
 
 After, you must add the `deleteHRP.yag` like that :
    - **Trigger** : `regex` with : `^\((.*)?\)?`
