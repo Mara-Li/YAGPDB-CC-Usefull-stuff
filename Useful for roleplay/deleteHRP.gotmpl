@@ -1,5 +1,10 @@
-{{$cat := .Channel.ParentID}}
-{{if eq $cat 720263038879662120 701379688177598495}} {{/* Mettez les catégories où vous voulez que la commande fonctionne*/}}
+{{$roleCat := (dbGet 0 "Role_Category").Value}}
+{{if not (dbGet 0 "Role_Category") }}
+	{{$roleCat = cslice}}
+{{else}}
+	{{$roleCat = (dbGet 0 "Role_Category").Value}}
+{{end}}
+{{if eq (in $roleCat $cat) true}}
 	{{ $matches := reFindAllSubmatches `^\((.*)?\)?` .Message.Content }}
 	{{if eq (len (index (index $matches 0) 0)) (len .Message.Content) }}
 		{{deleteTrigger 180}}
