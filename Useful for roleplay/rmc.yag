@@ -1,0 +1,35 @@
+{{$cat := .Channel.ParentID}}
+{{$roleCat := cslice}}
+{{if not (dbGet 0 "Role_Category") }}
+    {{$roleCat = cslice}}
+{{else}}
+    {{$old_cat := (dbGet 0 "Role_Category").Value}}
+    {{range $old_cat}}
+        {{$roleCat = $roleCat.Append .}}
+    {{end}}
+ {{end}}
+
+{{if .CmdArgs}}
+    {{$cat = .CmdArgs}}
+    {{if ge (len $cat ) 2}}
+        {{range $cat}}
+            {{if eq (in $roleCat .) false}}
+                {{$roleCat = $roleCat.Append .}}
+            {{end}}
+        {{end}}
+    {{else}}
+        {{$cat = toInt (index .CmdArgs 1)}}
+        {{if eq (in $roleCat $cat) false}}
+            {{$roleCat = $roleCat.Append $cat}}
+        {{end}}
+    {{end}}
+{{else}}
+    {{if eq (in $roleCat $cat) false}}
+        {{$roleCat = $roleCat.Append $cat}}
+    {{end}}
+{{end}}
+
+{{dbSet 0 "Role_Category" $roleCat}}
+{{$m := sendMessageRetID nil (print $cat " est maintenant dans la base de donnée")}}
+{{deleteTrigger 1}}
+{{deleteMessage nil $m 30}}
