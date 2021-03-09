@@ -1,0 +1,37 @@
+{{$cat := .Channel.ParentID}}
+{{$roleCat := cslice}}
+{{if not (dbGet 0 "Role_Category") }}
+    {{$roleCat = cslice}}
+{{else}}
+    {{$old_cat := (dbGet 0 "Role_Category").Value}}
+    {{range $old_cat}}
+        {{$roleCat = $roleCat.Append .}}
+    {{end}}
+ {{end}}
+
+ {{$new_cat := cslice}}
+
+ {{if .CmdArgs}}
+    {{$cat = .CmdArgs}}
+    {{if ge (len $cat ) 2}}
+        {{range $cat}}
+            {{if eq (in $roleCat .) true}}
+                {{$new_cat = $new_cat.Append .}}
+            {{end}}
+        {{end}}
+    {{else}}
+        {{$cat = toInt (index .CmdArgs 1)}}
+        {{if eq (in $roleCat $cat) true}}
+            {{$new_cat = $new_cat.Append .}}
+        {{end}}
+    {{end}}
+{{else}}
+    {{if eq (in $roleCat $cat) true}}
+        {{$new_cat = $new_cat.Append .}}
+    {{end}}
+{{end}}
+
+{{dbSet 0 "Role_Category" $new_cat}}
+{{$m := sendMessageRetID nil (print $cat " a été retiré de la base de donnée.")}}
+{{deleteTrigger 1}}
+{{deleteMessage nil $m 30}}
