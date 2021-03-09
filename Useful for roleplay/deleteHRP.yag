@@ -1,3 +1,4 @@
+{{$cat := .Channel.ParentID}}
 {{$roleCat := (dbGet 0 "Role_Category").Value}}
 {{if not (dbGet 0 "Role_Category") }}
 	{{$roleCat = cslice}}
@@ -8,5 +9,5 @@
 	{{ $matches := reFindAllSubmatches `^\((.*)?\)?` .Message.Content }}
 	{{if eq (len (index (index $matches 0) 0)) (len .Message.Content) }}
 		{{deleteTrigger 180}}
-	{{end}} 
+	{{end}}
 {{end}}
